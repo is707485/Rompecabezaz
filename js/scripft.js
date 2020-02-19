@@ -104,6 +104,7 @@ function clickCell(e){
 			console.log("Seleciona una piesa");
 		}
 	}else{
+		e.target.dataset.fill="true";
 		e.target.appendChild(selectedPiece)
 		selectedPiece=null;
 	}
