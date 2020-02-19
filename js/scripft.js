@@ -7,14 +7,17 @@ createBoard();
 createPieces();
 
 
-function createCell(width, height){
+function createCell(width, height,position){
 
 	 var cellElement = document.createElement("div");
 	 cellElement.style.width = width;
 	 cellElement.style.height = height;
 	 cellElement.style.border="1px solid black";
 	 cellElement.style.backgroundColor = "#124242";
+	 cellElement.dataset.position = position;
+	 
 	 cellElement.onclick=clickCell;
+	 cellElement.dataset.fill=false;
 	 return cellElement;
 }
 function createPiece(width, height, piece){
@@ -31,6 +34,9 @@ function createPiece(width, height, piece){
 	pieceElement.style.border="1px solid black";
 	pieceElement.src = piece.image;
 	pieceElement.onclick= clickPiece;
+	pieceElement.dataset.position=piece.position;
+	pieceElement.dataset.fill=false;
+	pieceElement.dataset.moved = false;
 	
 	cellElement.appendChild(pieceElement);
 	
@@ -42,7 +48,7 @@ function createBoard(){
 	width /=4;
 	height /=4;
 	for (var i=0;i<16;i++){
-		let CellElement = createCell(width,height);
+		let CellElement = createCell(width,height, i);
 		addCell(CellElement);
 	}
 }
@@ -83,12 +89,37 @@ function addPiece(element){
 function clickPiece(e){
 	var piece = e.target;
 	selectedPiece=piece;
+	if(piece.dataset.moved=="true"){
+			verifyCell(piece.parentElement);
+	}
+	selectedPiece=piece;
 }
 function clickCell(e){
-	if(selectedPiece){
-		let cell = e.target;
-		cell.appendChild(selectedPiece);
+	if(e.target.parentElement.dataset.fill=="true"){
+		if(selectedPiece){
+			let cell = e.target.parent;
+			verifyCell(cell);
+			selectedPiece=null;
+		}else{
+			console.log("Seleciona una piesa");
+		}
 	}else{
-		console.log("Seleciona una piesa");
+		e.target.appendChild(selectedPiece)
+		selectedPiece=null;
 	}
+}
+function verifyCell(element){
+	var fill = element.dataset.fill=="true";
+	if(fill){
+		let piece = element.children[0];
+		element.appendChild(selectedPiece);
+		addPieceByPosition(piece);
+	}else{
+		element.dataset.fill=true;
+		element.appendChild(selectedPiece);
+	}
+}
+function addPieceByPosition(element){
+	var position = element.dataset.position;
+	conTainerPiece.children[position].appendChild(element);
 }
